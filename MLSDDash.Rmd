@@ -5,8 +5,7 @@ output:
     orientation: row
     vertical_layout: scroll
     source_code: embed
-    toc: TRUE
-    toc_float: TRUE
+    social: ["twitter", "menu"]
 ---
 
 ```{r setup, include=FALSE}
@@ -20,11 +19,11 @@ library(printr)
 ```
 
 ```{r}
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/Tables.RData")
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/Accs.RData")
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/SpecDists.RData")
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/PrimalData.RData")
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/DualData.RData")
+load("Data/Tables.RData")
+load("Data/Accs.RData")
+load("Data/SpecDists.RData")
+load("Data/PrimalData.RData")
+load("Data/DualData.RData")
 ```
 
 Primal Spectral Distance
