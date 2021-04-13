@@ -1,0 +1,513 @@
+---
+title: "Spectral Distances"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: scroll
+    source_code: embed
+    toc: TRUE
+    toc_float: TRUE
+    navbar:
+      - { title: "Contact", href: "https://www.hughwarden.com" }
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(highcharter)
+library(reshape2)
+library(dplyr)
+library(broom)
+library(d3heatmap)
+library(printr)
+```
+
+```{r}
+load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/Tables.RData")
+load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/Accs.RData")
+load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/SpecDists.RData")
+load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/PrimalData.RData")
+load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/DualData.RData")
+```
+
+Primal Spectral Distance
+==========
+
+Row
+----------
+
+### Primal Spectral Distance
+
+Here is a heatmap of the spectral distances between the Primal Classification Hypegraphs (or Model 1 Hypergraphs), where vertices are cells and hyperedges are cell fates. The hyeprgraphs have been sorted in the heatmap such the species tested on is grouped together. It is clear to see, that all hypergraphs tested on the same species have low spectral distance between them, except for Human 3 who's spectral distance is much closer to mice than it is to humans.
+
+Row {data-height=500}
+----------
+
+### Heatmap
+
+```{r}
+d3heatmap(sd.p, symm = TRUE, colors = c("green", "red"))
+```
+
+### UMAP Representation of Spectral Projection
+
+```{R}
+x <- c("Trained On:", "Tested On:")
+y <- sprintf("{point.%s:.2f}", c("Train", "Test"))
+tltip <- tooltip_table(x,y)
+
+primal.data %>% 
+  hchart("point", hcaes(x = UMAP1, y = UMAP2, group = testspec)) %>% 
+  hc_colors(c("blue", "red")) %>%
+  hc_xAxis(title = list(text = "UMAP 1")) %>%
+  hc_yAxis(title = list(text = "UMAP 2")) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+Dual Spectral Distance
+==========
+
+Row
+----------
+
+### Dual Spectral Distance
+
+Here is a heatmap of the spectral distances between the Dual Classification Hypegraphs (or Model 2 Hypergraphs), where vertices are cell fates and hyperedges are cells. It is harder to immediately analyse these resluts by inspection. There is a definite pattern to the data with respect to the species the classifiers were tested and trained on. It is interesting to note that the spectral distances between all hypergraphs where the classifier was both tested and trained on the same species is low. Oimilarly to the primal case, the pattern in the data is broken by Human 3. The hypergraphs of classifiers trained on Human 3 but then tested on mice has a starkly different heatmap to other similar classifiers.
+
+Row {data-height=500}
+----------
+
+### Heatmap
+
+```{r}
+d3heatmap(sd.d, symm = TRUE, colors = c("green", "red"))
+```
+
+### A Statisic
+
+```{R}
+x <- c("Trained On:", "Tested On:")
+y <- sprintf("{point.%s:.2f}", c("Train", "Test"))
+tltip <- tooltip_table(x,y)
+
+dual.data %>% 
+  hchart("point", hcaes(x = UMAP1, y = UMAP2, group = Interspec)) %>% 
+  hc_colors(c("black", "red", "blue")) %>%
+  hc_xAxis(title = list(text = "UMAP 1")) %>%
+  hc_yAxis(title = list(text = "UMAP 2")) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Confidence/Accuracy
+==========
+
+Row
+----------
+
+### **Balanced Accuracy Compared to Spectral Distance From the Disconnected Hypergraph**
+```{r}
+p.data <- data.frame(sd = unlist(spectral_distances$disconnected), acc = unlist(bal_accs))
+p.data$train <- c(rep(c("Mouse 1", "Mouse 2", "Mouse 3"), 2, each = 3),rep(c("Human 1", "Human 2", "Human 3"), 2, each = 3))
+
+p.data$test <- c(rep(c("Mouse 1", "Mouse 2", "Mouse 3"), 3), rep(c("Human 1", "Human 2", "Human 3"), 3), rep(c("Mouse 1", "Mouse 2", "Mouse 3"), 3), rep(c("Human 1", "Human 2", "Human 3"), 3))
+
+p.data$trainspec <- rep(c("Mouse", "Human"), each = 18)
+p.data$testspec <- rep(c("Mouse", "Human"), each = 9, 2)
+
+x <- c("Trained On:", "Tested On:", "Balanced Accuracy:", "Spectral Distance:")
+y <- sprintf("{point.%s:.2f}", c("train", "test", "acc", "sd"))
+tltip <- tooltip_table(x,y)
+
+model.mouse <- lm(sd ~ acc, data = p.data[which(p.data$trainspec == "Mouse"),])
+fit.mouse <- augment(model.mouse) %>% arrange(acc)
+
+model.human <- lm(sd ~ acc, data = p.data[which(p.data$trainspec == "Human"),])
+fit.human <- augment(model.human) %>% arrange(acc)
+
+p.data %>%
+  hchart("point", hcaes(x = acc, y = sd, group = trainspec)) %>%
+  hc_colors(c("blue", "red")) %>%
+  hc_add_series(fit.human, type = "line", hcaes(x = acc, y = .fitted), name = "Human Fit", id = "humanfit")%>%
+  hc_add_series(fit.mouse, type = "line", hcaes(x = acc, y = .fitted), name = "Mouse Fit", id = "mousefit")%>%
+  hc_xAxis(title = list(text = "Balanced Accurcay")) %>%
+  hc_yAxis(title = list(text = "Spectral Distance From the Disconnected Hypergraph")) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### **Average Balanced Accuracy of Intraspecies Classifications**
+```{r}
+gauge(round(mean(p.data$acc[which(p.data$testspec == p.data$trainspec)]), digits = 2),
+      min = 0,
+      max = 1,
+      gaugeSectors(success = c(0.85, 1),
+                   warning = c(0.7, 0.85),
+                   danger = c(0, 0.7)
+                   )
+      )
+```
+
+### **Average Spectral Distance From the Disconnected Hypergraph of Intraspecies Classifications**
+
+```{r}
+valueBox(round(mean(p.data$sd[which(p.data$testspec == p.data$trainspec)]), digits = 2))
+```
+
+### **Average Balanced Accuracy of Interspecies Classifications**
+```{r}
+gauge(round(mean(p.data$acc[which(p.data$testspec != p.data$trainspec)]), digits = 2),
+      min = 0,
+      max = 1,
+      gaugeSectors(success = c(0.85, 1),
+                   warning = c(0.7, 0.85),
+                   danger = c(0, 0.7)
+                   )
+      )
+```
+
+### **Average Spectral Distance From the Disconnected Hypergraph of Interspecies Classifications**
+
+```{r}
+valueBox(round(mean(p.data$sd[which(p.data$testspec != p.data$trainspec)]), digits = 2))
+```
+
+Row {.tabset .tabset-fade data-height=1000}
+----------
+
+### M1M1
+```{R}
+as.table(conf_mat$mm[[1]][[1]]$overall[-7])
+
+conf_mat$mm[[1]][[1]]$byClass
+
+conf_mat$mm[[1]][[1]]$table
+```
+
+### M1M2
+```{R}
+as.table(conf_mat$mm[[1]][[2]]$overall[-7])
+
+conf_mat$mm[[1]][[2]]$byClass
+
+conf_mat$mm[[1]][[2]]$table
+```
+
+### M1M3
+```{R}
+as.table(conf_mat$mm[[1]][[3]]$overall[-7])
+
+conf_mat$mm[[1]][[3]]$byClass
+
+conf_mat$mm[[1]][[3]]$table
+```
+
+### M2M1
+```{R}
+as.table(conf_mat$mm[[2]][[1]]$overall[-7])
+
+conf_mat$mm[[2]][[1]]$byClass
+
+conf_mat$mm[[2]][[1]]$table
+```
+
+### M2M2
+```{R}
+as.table(conf_mat$mm[[2]][[2]]$overall[-7])
+
+conf_mat$mm[[2]][[2]]$byClass
+
+conf_mat$mm[[2]][[2]]$table
+```
+
+### M2M3
+```{R}
+as.table(conf_mat$mm[[2]][[3]]$overall[-7])
+
+conf_mat$mm[[2]][[3]]$byClass
+
+conf_mat$mm[[2]][[3]]$table
+```
+
+### M3M1
+```{R}
+as.table(conf_mat$mm[[3]][[1]]$overall[-7])
+
+conf_mat$mm[[3]][[1]]$byClass
+
+conf_mat$mm[[3]][[1]]$table
+```
+
+### M3M2
+```{R}
+as.table(conf_mat$mm[[3]][[2]]$overall[-7])
+
+conf_mat$mm[[3]][[2]]$byClass
+
+conf_mat$mm[[3]][[2]]$table
+```
+
+### M3M3
+```{R}
+as.table(conf_mat$mm[[3]][[3]]$overall[-7])
+
+conf_mat$mm[[3]][[3]]$byClass
+
+conf_mat$mm[[3]][[3]]$table
+```
+
+### M1H1
+```{R}
+as.table(conf_mat$mh[[1]][[1]]$overall[-7])
+
+conf_mat$mh[[1]][[1]]$byClass
+
+conf_mat$mh[[1]][[1]]$table
+```
+
+### M1H2
+```{R}
+as.table(conf_mat$mh[[1]][[2]]$overall[-7])
+
+conf_mat$mh[[1]][[2]]$byClass
+
+conf_mat$mh[[1]][[2]]$table
+```
+
+### M1H3
+```{R}
+as.table(conf_mat$mh[[1]][[3]]$overall[-7])
+
+conf_mat$mh[[1]][[3]]$byClass
+
+conf_mat$mh[[1]][[3]]$table
+```
+
+### M2H1
+```{R}
+as.table(conf_mat$mh[[2]][[1]]$overall[-7])
+
+conf_mat$mh[[2]][[1]]$byClass
+
+conf_mat$mh[[2]][[1]]$table
+```
+
+### M2H2
+```{R}
+as.table(conf_mat$mh[[2]][[2]]$overall[-7])
+
+conf_mat$mh[[2]][[2]]$byClass
+
+conf_mat$mh[[2]][[2]]$table
+```
+
+### M2H3
+```{R}
+as.table(conf_mat$mh[[2]][[3]]$overall[-7])
+
+conf_mat$mh[[2]][[3]]$byClass
+
+conf_mat$mh[[2]][[3]]$table
+```
+
+### M3H1
+```{R}
+as.table(conf_mat$mh[[3]][[1]]$overall[-7])
+
+conf_mat$mh[[3]][[1]]$byClass
+
+conf_mat$mh[[3]][[1]]$table
+```
+
+### M3H2
+```{R}
+as.table(conf_mat$mh[[3]][[2]]$overall[-7])
+
+conf_mat$mh[[3]][[2]]$byClass
+
+conf_mat$mh[[3]][[2]]$table
+```
+
+### M3H3
+```{R}
+as.table(conf_mat$mh[[3]][[3]]$overall[-7])
+
+conf_mat$mh[[3]][[3]]$byClass
+
+conf_mat$mh[[3]][[3]]$table
+```
+
+### H1M1
+```{R}
+as.table(conf_mat$hm[[1]][[1]]$overall[-7])
+
+conf_mat$hm[[1]][[1]]$byClass
+
+conf_mat$hm[[1]][[1]]$table
+```
+
+### H1M2
+```{R}
+as.table(conf_mat$hm[[1]][[2]]$overall[-7])
+
+conf_mat$hm[[1]][[2]]$byClass
+
+conf_mat$hm[[1]][[2]]$table
+```
+
+### H1M3
+```{R}
+as.table(conf_mat$hm[[1]][[3]]$overall[-7])
+
+conf_mat$hm[[1]][[3]]$byClass
+
+conf_mat$hm[[1]][[3]]$table
+```
+
+### H2M1
+```{R}
+as.table(conf_mat$hm[[2]][[1]]$overall[-7])
+
+conf_mat$hm[[2]][[1]]$byClass
+
+conf_mat$hm[[2]][[1]]$table
+```
+
+### H2M2
+```{R}
+as.table(conf_mat$hm[[2]][[2]]$overall[-7])
+
+conf_mat$hm[[2]][[2]]$byClass
+
+conf_mat$hm[[2]][[2]]$table
+```
+
+### H2M3
+```{R}
+as.table(conf_mat$hm[[2]][[3]]$overall[-7])
+
+conf_mat$hm[[2]][[3]]$byClass
+
+conf_mat$hm[[2]][[3]]$table
+```
+
+### H3M1
+```{R}
+as.table(conf_mat$hm[[3]][[1]]$overall[-7])
+
+conf_mat$hm[[3]][[1]]$byClass
+
+conf_mat$hm[[3]][[1]]$table
+```
+
+### H3M2
+```{R}
+as.table(conf_mat$hm[[3]][[2]]$overall[-7])
+
+conf_mat$hm[[3]][[2]]$byClass
+
+conf_mat$hm[[3]][[2]]$table
+```
+
+### H3M3
+```{R}
+as.table(conf_mat$hm[[3]][[3]]$overall[-7])
+
+conf_mat$hm[[3]][[3]]$byClass
+
+conf_mat$hm[[3]][[3]]$table
+```
+
+### H1H1
+```{R}
+as.table(conf_mat$hh[[1]][[1]]$overall[-7])
+
+conf_mat$hh[[1]][[1]]$byClass
+
+conf_mat$hh[[1]][[1]]$table
+```
+
+### H1H2
+```{R}
+as.table(conf_mat$hh[[1]][[2]]$overall[-7])
+
+conf_mat$hh[[1]][[2]]$byClass
+
+conf_mat$hh[[1]][[2]]$table
+```
+
+### H1H3
+```{R}
+as.table(conf_mat$hh[[1]][[3]]$overall[-7])
+
+conf_mat$hh[[1]][[3]]$byClass
+
+conf_mat$hh[[1]][[3]]$table
+```
+
+### H2H1
+```{R}
+as.table(conf_mat$hh[[2]][[1]]$overall[-7])
+
+conf_mat$hh[[2]][[1]]$byClass
+
+conf_mat$hh[[2]][[1]]$table
+```
+
+### H2H2
+```{R}
+as.table(conf_mat$hh[[2]][[2]]$overall[-7])
+
+conf_mat$hh[[2]][[2]]$byClass
+
+conf_mat$hh[[2]][[2]]$table
+```
+
+### H2H3
+```{R}
+as.table(conf_mat$hh[[2]][[3]]$overall[-7])
+
+conf_mat$hh[[2]][[3]]$byClass
+
+conf_mat$hh[[2]][[3]]$table
+```
+
+### H3H1
+```{R}
+as.table(conf_mat$hh[[3]][[1]]$overall[-7])
+
+conf_mat$hh[[3]][[1]]$byClass
+
+conf_mat$hh[[3]][[1]]$table
+```
+
+### H3H2
+```{R}
+as.table(conf_mat$hh[[3]][[2]]$overall[-7])
+
+conf_mat$hh[[3]][[2]]$byClass
+
+conf_mat$hh[[3]][[2]]$table
+```
+
+### H3H3
+```{R}
+as.table(conf_mat$hh[[3]][[3]]$overall[-7])
+
+conf_mat$hh[[3]][[3]]$byClass
+
+conf_mat$hh[[3]][[3]]$table
+```
+
+
+
+
+
+
+
+
+
+
