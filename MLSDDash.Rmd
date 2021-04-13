@@ -7,8 +7,6 @@ output:
     source_code: embed
     toc: TRUE
     toc_float: TRUE
-    navbar:
-      - { title: "Contact", href: "" }
 ---
 
 ```{r setup, include=FALSE}
