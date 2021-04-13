@@ -8,7 +8,7 @@ output:
     toc: TRUE
     toc_float: TRUE
     navbar:
-      - { title: "Contact", href: "https://www.hughwarden.com" }
+      - { title: "Contact", href: "" }
 ---
 
 ```{r setup, include=FALSE}
