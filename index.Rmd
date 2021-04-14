@@ -6,6 +6,7 @@ output:
     vertical_layout: scroll
     source_code: embed
     social: ["twitter", "menu"]
+    theme: flatly
 ---
 
 ```{r setup, include=FALSE}

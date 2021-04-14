@@ -271,25 +271,116 @@ div.tocify {
 </div>
 
 
-<div id="introduction" class="section level1">
-<h1><span class="header-section-number">1</span> Introduction</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<div id="preprocessing" class="section level1">
+<h1><span class="header-section-number">1</span> Preprocessing</h1>
 </div>
-<div id="spectral-hypergraphs" class="section level1">
-<h1><span class="header-section-number">2</span> Spectral Hypergraphs</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-<div id="primaldual-spectral-distance" class="section level2">
-<h2><span class="header-section-number">2.1</span> Primal/Dual Spectral Distance</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<div id="mlmodels" class="section level1">
+<h1><span class="header-section-number">2</span> MLModels</h1>
+<p>In this script the data is split for each individual, and for each individual is split into testing and trainiing data sets. Each of these training datasets is then used to train a multiple logistic regression classifier. Each of these classifiers is tested on each testing data set in turn and the softmax output and predicted classes are saved.</p>
+<p>Firstly, the required libraries are loaded into R</p>
+<pre class="r"><code>library(keras)
+library(splitstackshape)</code></pre>
+<p>The keras library is used for machine learning and the splitstackshape library is for stratified sampling. Both of these will be covered in more detail in the relevant sections below.</p>
+<p>Then the working directory is set, for this computer this is given by</p>
+<pre class="r"><code>setwd(&quot;/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Demo&quot;)</code></pre>
+<p><strong>This working directory is different from the one given in the scripts so that this document does not overwrite results currently being analysed in the project.</strong> It is important that the working directory has two folders, &quot;Data&quot; containing all of the relevant data sets and exports and &quot;Models&quot; to save all the models into, as can be found in this GitHub repo.</p>
+<p>Then all of the preprocessed datasets from the previous step are loaded into the environment</p>
+<pre class="r"><code>load(&quot;Data/MouseFeatures&quot;)
+load(&quot;Data/HumanFeatures&quot;)
+load(&quot;Data/MouseIdentity&quot;)
+load(&quot;Data/HumanIdentity&quot;)
+load(&quot;Data/MouseSpecimen&quot;)
+load(&quot;Data/HumanSpecimen&quot;)</code></pre>
+<p>Mouse and human features are the processed feature sets from experiments and preprocessing of Stumpf et. Al. Mouse and human isentity contains the ground truth of those feature sets. Mouse and human specimen contains data scraped from the meta data of the feature sets of the Stumpf et Al experiment, containing an identifier as to which individual that observation came from.</p>
+<p>These individual identifiers are then used to split the mouse and human features into smaller data sets for each individual.</p>
+<pre class="r"><code>x.mouse &lt;- list(spec1 = x.mouse[which(specimen.mouse == &quot;M1&quot;),], spec2 = x.mouse[which(specimen.mouse == &quot;M2&quot;),], spec3 = x.mouse[which(specimen.mouse == &quot;M3&quot;),], full = x.mouse)
+x.human &lt;- list(spec1 = x.human[which(specimen.human == &quot;H1&quot;),], spec2 = x.human[which(specimen.human == &quot;H2&quot;),], spec3 = x.human[which(specimen.human == &quot;H3&quot;),], full = x.human)</code></pre>
+<p>Then the data needs to be split into testing and training sets. For this experiment an 80/20 train/test split was used. To do this rows were randomly sampled using stratified sampling. This means that instead of randomly sampling 80% of the whole data set, the data set is split up by its class, and 80% of each class was selected to become part of the training data set. The indices are calculated via</p>
+<pre class="r"><code>train_ind &lt;- list(mouse = list(), human = list())
+train_ind$mouse[[1]] &lt;- stratified(data.frame(index = 1:nrow(x.mouse$spec1), identity = y.mouse[which(specimen.mouse == &quot;M1&quot;)]), group = 2, size = 0.8)$index
+train_ind$mouse[[2]] &lt;- stratified(data.frame(index = 1:nrow(x.mouse$spec2), identity = y.mouse[which(specimen.mouse == &quot;M2&quot;)]), group = 2, size = 0.8)$index
+train_ind$mouse[[3]] &lt;- stratified(data.frame(index = 1:nrow(x.mouse$spec3), identity = y.mouse[which(specimen.mouse == &quot;M3&quot;)]), group = 2, size = 0.8)$index
+train_ind$human[[1]] &lt;- stratified(data.frame(index = 1:nrow(x.human$spec1), identity = y.human[which(specimen.human == &quot;H1&quot;)]), group = 2, size = 0.8)$index
+train_ind$human[[2]] &lt;- stratified(data.frame(index = 1:nrow(x.human$spec2), identity = y.human[which(specimen.human == &quot;H2&quot;)]), group = 2, size = 0.8)$index
+train_ind$human[[3]] &lt;- stratified(data.frame(index = 1:nrow(x.human$spec3), identity = y.human[which(specimen.human == &quot;H3&quot;)]), group = 2, size = 0.8)$index</code></pre>
+<p>and then are used to further divide the feature data set</p>
+<pre class="r"><code>x.mouse$spec1 &lt;- list(train = x.mouse$spec1[train_ind$mouse[[1]],], test = x.mouse$spec1[-train_ind$mouse[[1]],])
+x.mouse$spec2 &lt;- list(train = x.mouse$spec2[train_ind$mouse[[2]],], test = x.mouse$spec2[-train_ind$mouse[[2]],])
+x.mouse$spec3 &lt;- list(train = x.mouse$spec3[train_ind$mouse[[3]],], test = x.mouse$spec3[-train_ind$mouse[[3]],])
+x.human$spec1 &lt;- list(train = x.human$spec1[train_ind$human[[1]],], test = x.human$spec1[-train_ind$human[[1]],])
+x.human$spec2 &lt;- list(train = x.human$spec2[train_ind$human[[2]],], test = x.human$spec2[-train_ind$human[[2]],])
+x.human$spec3 &lt;- list(train = x.human$spec3[train_ind$human[[3]],], test = x.human$spec3[-train_ind$human[[3]],])</code></pre>
+<p>The same principles are then used to split up the ground truth observations</p>
+<pre class="r"><code>y.mouse.class &lt;- list(spec1 = y.mouse[which(specimen.mouse == &quot;M1&quot;)], spec2 = y.mouse[which(specimen.mouse == &quot;M2&quot;)], spec3 = y.mouse[which(specimen.mouse == &quot;M3&quot;)], full = y.mouse)
+y.human.class &lt;- list(spec1 = y.human[which(specimen.human == &quot;H1&quot;)], spec2 = y.human[which(specimen.human == &quot;H2&quot;)], spec3 = y.human[which(specimen.human == &quot;H3&quot;)], full = y.human)
+
+y.mouse.class$spec1 &lt;- list(train = y.mouse.class$spec1[train_ind$mouse[[1]]], test = y.mouse.class$spec1[-train_ind$mouse[[1]]])
+y.mouse.class$spec2 &lt;- list(train = y.mouse.class$spec2[train_ind$mouse[[2]]], test = y.mouse.class$spec2[-train_ind$mouse[[2]]])
+y.mouse.class$spec3 &lt;- list(train = y.mouse.class$spec3[train_ind$mouse[[3]]], test = y.mouse.class$spec3[-train_ind$mouse[[3]]])
+y.human.class$spec1 &lt;- list(train = y.human.class$spec1[train_ind$human[[1]]], test = y.human.class$spec1[-train_ind$human[[1]]])
+y.human.class$spec2 &lt;- list(train = y.human.class$spec2[train_ind$human[[2]]], test = y.human.class$spec2[-train_ind$human[[2]]])
+y.human.class$spec3 &lt;- list(train = y.human.class$spec3[train_ind$human[[3]]], test = y.human.class$spec3[-train_ind$human[[3]]])</code></pre>
+<p>This process is then done again for the ground truth obserations, but first they are converted into one-hot encoding so that they can be used by the machine learning functions.</p>
+<pre class="r"><code>y.mouse &lt;- list(spec1 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == &quot;M1&quot;)])-1, 11), spec2 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == &quot;M2&quot;)])-1, 11), spec3 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == &quot;M3&quot;)])-1, 11), full = to_categorical(as.numeric(y.mouse)-1, 11))
+y.human &lt;- list(spec1 = to_categorical(as.numeric(y.human[which(specimen.human == &quot;H1&quot;)])-1, 11), spec2 = to_categorical(as.numeric(y.human[which(specimen.human == &quot;H2&quot;)])-1, 11), spec3 = to_categorical(as.numeric(y.human[which(specimen.human == &quot;H3&quot;)])-1, 11), full = to_categorical(as.numeric(y.human)-1, 11))
+
+y.mouse$spec1 &lt;- list(train = y.mouse$spec1[train_ind$mouse[[1]],], test = y.mouse$spec1[-train_ind$mouse[[1]],])
+y.mouse$spec2 &lt;- list(train = y.mouse$spec2[train_ind$mouse[[2]],], test = y.mouse$spec2[-train_ind$mouse[[2]],])
+y.mouse$spec3 &lt;- list(train = y.mouse$spec3[train_ind$mouse[[3]],], test = y.mouse$spec3[-train_ind$mouse[[3]],])
+y.human$spec1 &lt;- list(train = y.human$spec1[train_ind$human[[1]],], test = y.human$spec1[-train_ind$human[[1]],])
+y.human$spec2 &lt;- list(train = y.human$spec2[train_ind$human[[2]],], test = y.human$spec2[-train_ind$human[[2]],])
+y.human$spec3 &lt;- list(train = y.human$spec3[train_ind$human[[3]],], test = y.human$spec3[-train_ind$human[[3]],])</code></pre>
+<p>The ground truth classes are then saved</p>
+<pre class="r"><code>save(y.mouse.class, y.human.class, file = &quot;Data/MLClasses.RData&quot;)</code></pre>
+<p>A list is then made to store all of the machine learning models in</p>
+<pre class="r"><code>ml.models &lt;- list(mouse = list(), human = list())</code></pre>
+<p>The build_model function initialises and sets up a keras MLR model</p>
+<pre class="r"><code>build_model &lt;- function(in_shape) {
+  model &lt;- keras_model_sequential() %&gt;%
+    layer_dense(units = 11,
+                activation = &quot;softmax&quot;,
+                input_shape = in_shape)
+  model %&gt;% compile(
+    loss = &quot;categorical_crossentropy&quot;,
+    optimizer = &quot;rmsprop&quot;,
+    metrics = list(&quot;accuracy&quot;) )
+  return(model)
+}</code></pre>
+<p>This can then be used iteratively to generate an MLR model trained on each data set</p>
+<pre class="r"><code>for (i in 1:3){
+  ml.models$mouse[[i]] &lt;- build_model(4311)
+  ml.models$human[[i]] &lt;- build_model(4311)
+}
+for (i in 1:3){
+  ml.models$mouse[[i]] %&gt;% fit(x.mouse[[i]]$train, y.mouse[[i]]$train)
+  ml.models$human[[i]] %&gt;% fit(x.human[[i]]$train, y.human[[i]]$train)
+}</code></pre>
+<p>Then each model is tested on the testing data. Two lists are generated to store these tests, one saves the softmax output of the classifier and one saves the predicted class.</p>
+<pre class="r"><code>ml.sftmx &lt;- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
+ml.class &lt;- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
+for (i in 1:3){
+  for (j in 1:3){
+    ml.sftmx$mouse[[i]][[j]] &lt;- ml.models$mouse[[i]] %&gt;% predict_proba(x.mouse[[j]]$test)
+    ml.sftmx$human[[i]][[j]] &lt;- ml.models$human[[i]] %&gt;% predict_proba(x.human[[j]]$test)
+    ml.sftmx$mouse_human[[i]][[j]] &lt;- ml.models$mouse[[i]] %&gt;% predict_proba(x.human[[j]]$test)
+    ml.sftmx$human_mouse[[i]][[j]] &lt;- ml.models$human[[i]] %&gt;% predict_proba(x.mouse[[j]]$test)
+    
+    ml.class$mouse[[i]][[j]] &lt;- ml.models$mouse[[i]] %&gt;% predict_classes(x.mouse[[j]]$test)
+    ml.class$human[[i]][[j]] &lt;- ml.models$human[[i]] %&gt;% predict_classes(x.human[[j]]$test)
+    ml.class$mouse_human[[i]][[j]] &lt;- ml.models$mouse[[i]] %&gt;% predict_classes(x.human[[j]]$test)
+    ml.class$human_mouse[[i]][[j]] &lt;- ml.models$human[[i]] %&gt;% predict_classes(x.mouse[[j]]$test)
+  }
+}</code></pre>
+<p>Then all data and all of the models are saved</p>
+<pre class="r"><code>save(ml.sftmx, ml.class, file = &quot;Data/MLResults.RData&quot;)
+save(x.mouse, y.mouse, x.human, y.human, train_ind, file = &quot;Data/MLData.RData&quot;)
+for (i in 1:3){
+  save_model_tf(ml.models$mouse[[i]], file = paste0(&quot;Models/Mouse&quot;,i))
+  save_model_tf(ml.models$human[[i]], file = paste0(&quot;Models/Human&quot;,i))
+}</code></pre>
 </div>
-<div id="spectral-distance-from-the-disconnected-hypergraph" class="section level2">
-<h2><span class="header-section-number">2.2</span> Spectral Distance From the Disconnected Hypergraph</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-</div>
-</div>
-<div id="coding" class="section level1">
-<h1><span class="header-section-number">3</span> Coding</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<div id="specdists" class="section level1">
+<h1><span class="header-section-number">3</span> SpecDists</h1>
 </div>
 
 

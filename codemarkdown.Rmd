@@ -11,25 +11,176 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
-# Introduction
+# Preprocessing
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+# MLModels
 
-# Spectral Hypergraphs
+In this script the data is split for each individual, and for each individual is split into testing and trainiing data sets. Each of these training datasets is then used to train a multiple logistic regression classifier. Each of these classifiers is tested on each testing data set in turn and the softmax output and predicted classes are saved.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Firstly, the required libraries are loaded into R
 
-## Primal/Dual Spectral Distance
+```{r}
+library(keras)
+library(splitstackshape)
+```
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The keras library is used for machine learning and the splitstackshape library is for stratified sampling. Both of these will be covered in more detail in the relevant sections below.
 
-## Spectral Distance From the Disconnected Hypergraph
+Then the working directory is set, for this computer this is given by
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+```{r}
+setwd("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Demo")
+```
 
-# Coding
+**This working directory is different from the one given in the scripts so that this document does not overwrite results currently being analysed in the project.** It is important that the working directory has two folders, "Data" containing all of the relevant data sets and exports and "Models" to save all the models into, as can be found in this GitHub repo.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Then all of the preprocessed datasets from the previous step are loaded into the environment
+
+```{r}
+load("Data/MouseFeatures")
+load("Data/HumanFeatures")
+load("Data/MouseIdentity")
+load("Data/HumanIdentity")
+load("Data/MouseSpecimen")
+load("Data/HumanSpecimen")
+```
+
+Mouse and human features are the processed feature sets from experiments and preprocessing of Stumpf et. Al. Mouse and human isentity contains the ground truth of those feature sets. Mouse and human specimen contains data scraped from the meta data of the feature sets of the Stumpf et Al experiment, containing an identifier as to which individual that observation came from.
+
+These individual identifiers are then used to split the mouse and human features into smaller data sets for each individual.
+
+```{r}
+x.mouse <- list(spec1 = x.mouse[which(specimen.mouse == "M1"),], spec2 = x.mouse[which(specimen.mouse == "M2"),], spec3 = x.mouse[which(specimen.mouse == "M3"),], full = x.mouse)
+x.human <- list(spec1 = x.human[which(specimen.human == "H1"),], spec2 = x.human[which(specimen.human == "H2"),], spec3 = x.human[which(specimen.human == "H3"),], full = x.human)
+```
+
+Then the data needs to be split into testing and training sets. For this experiment an 80/20 train/test split was used. To do this rows were randomly sampled using stratified sampling. This means that instead of randomly sampling 80% of the whole data set, the data set is split up by its class, and 80% of each class was selected to become part of the training data set. The indices are calculated via
+
+```{r}
+train_ind <- list(mouse = list(), human = list())
+train_ind$mouse[[1]] <- stratified(data.frame(index = 1:nrow(x.mouse$spec1), identity = y.mouse[which(specimen.mouse == "M1")]), group = 2, size = 0.8)$index
+train_ind$mouse[[2]] <- stratified(data.frame(index = 1:nrow(x.mouse$spec2), identity = y.mouse[which(specimen.mouse == "M2")]), group = 2, size = 0.8)$index
+train_ind$mouse[[3]] <- stratified(data.frame(index = 1:nrow(x.mouse$spec3), identity = y.mouse[which(specimen.mouse == "M3")]), group = 2, size = 0.8)$index
+train_ind$human[[1]] <- stratified(data.frame(index = 1:nrow(x.human$spec1), identity = y.human[which(specimen.human == "H1")]), group = 2, size = 0.8)$index
+train_ind$human[[2]] <- stratified(data.frame(index = 1:nrow(x.human$spec2), identity = y.human[which(specimen.human == "H2")]), group = 2, size = 0.8)$index
+train_ind$human[[3]] <- stratified(data.frame(index = 1:nrow(x.human$spec3), identity = y.human[which(specimen.human == "H3")]), group = 2, size = 0.8)$index
+```
+
+and then are used to further divide the feature data set
+
+```{r}
+x.mouse$spec1 <- list(train = x.mouse$spec1[train_ind$mouse[[1]],], test = x.mouse$spec1[-train_ind$mouse[[1]],])
+x.mouse$spec2 <- list(train = x.mouse$spec2[train_ind$mouse[[2]],], test = x.mouse$spec2[-train_ind$mouse[[2]],])
+x.mouse$spec3 <- list(train = x.mouse$spec3[train_ind$mouse[[3]],], test = x.mouse$spec3[-train_ind$mouse[[3]],])
+x.human$spec1 <- list(train = x.human$spec1[train_ind$human[[1]],], test = x.human$spec1[-train_ind$human[[1]],])
+x.human$spec2 <- list(train = x.human$spec2[train_ind$human[[2]],], test = x.human$spec2[-train_ind$human[[2]],])
+x.human$spec3 <- list(train = x.human$spec3[train_ind$human[[3]],], test = x.human$spec3[-train_ind$human[[3]],])
+```
+
+The same principles are then used to split up the ground truth observations
+
+```{r}
+y.mouse.class <- list(spec1 = y.mouse[which(specimen.mouse == "M1")], spec2 = y.mouse[which(specimen.mouse == "M2")], spec3 = y.mouse[which(specimen.mouse == "M3")], full = y.mouse)
+y.human.class <- list(spec1 = y.human[which(specimen.human == "H1")], spec2 = y.human[which(specimen.human == "H2")], spec3 = y.human[which(specimen.human == "H3")], full = y.human)
+
+y.mouse.class$spec1 <- list(train = y.mouse.class$spec1[train_ind$mouse[[1]]], test = y.mouse.class$spec1[-train_ind$mouse[[1]]])
+y.mouse.class$spec2 <- list(train = y.mouse.class$spec2[train_ind$mouse[[2]]], test = y.mouse.class$spec2[-train_ind$mouse[[2]]])
+y.mouse.class$spec3 <- list(train = y.mouse.class$spec3[train_ind$mouse[[3]]], test = y.mouse.class$spec3[-train_ind$mouse[[3]]])
+y.human.class$spec1 <- list(train = y.human.class$spec1[train_ind$human[[1]]], test = y.human.class$spec1[-train_ind$human[[1]]])
+y.human.class$spec2 <- list(train = y.human.class$spec2[train_ind$human[[2]]], test = y.human.class$spec2[-train_ind$human[[2]]])
+y.human.class$spec3 <- list(train = y.human.class$spec3[train_ind$human[[3]]], test = y.human.class$spec3[-train_ind$human[[3]]])
+```
+
+This process is then done again for the ground truth obserations, but first they are converted into one-hot encoding so that they can be used by the machine learning functions.
+
+```{r}
+y.mouse <- list(spec1 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == "M1")])-1, 11), spec2 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == "M2")])-1, 11), spec3 = to_categorical(as.numeric(y.mouse[which(specimen.mouse == "M3")])-1, 11), full = to_categorical(as.numeric(y.mouse)-1, 11))
+y.human <- list(spec1 = to_categorical(as.numeric(y.human[which(specimen.human == "H1")])-1, 11), spec2 = to_categorical(as.numeric(y.human[which(specimen.human == "H2")])-1, 11), spec3 = to_categorical(as.numeric(y.human[which(specimen.human == "H3")])-1, 11), full = to_categorical(as.numeric(y.human)-1, 11))
+
+y.mouse$spec1 <- list(train = y.mouse$spec1[train_ind$mouse[[1]],], test = y.mouse$spec1[-train_ind$mouse[[1]],])
+y.mouse$spec2 <- list(train = y.mouse$spec2[train_ind$mouse[[2]],], test = y.mouse$spec2[-train_ind$mouse[[2]],])
+y.mouse$spec3 <- list(train = y.mouse$spec3[train_ind$mouse[[3]],], test = y.mouse$spec3[-train_ind$mouse[[3]],])
+y.human$spec1 <- list(train = y.human$spec1[train_ind$human[[1]],], test = y.human$spec1[-train_ind$human[[1]],])
+y.human$spec2 <- list(train = y.human$spec2[train_ind$human[[2]],], test = y.human$spec2[-train_ind$human[[2]],])
+y.human$spec3 <- list(train = y.human$spec3[train_ind$human[[3]],], test = y.human$spec3[-train_ind$human[[3]],])
+```
+
+The ground truth classes are then saved
+
+```{r}
+save(y.mouse.class, y.human.class, file = "Data/MLClasses.RData")
+```
+
+
+A list is then made to store all of the machine learning models in
+
+```{r}
+ml.models <- list(mouse = list(), human = list())
+```
+
+The build_model function initialises and sets up a keras MLR model
+
+```{r}
+build_model <- function(in_shape) {
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 11,
+                activation = "softmax",
+                input_shape = in_shape)
+  model %>% compile(
+    loss = "categorical_crossentropy",
+    optimizer = "rmsprop",
+    metrics = list("accuracy") )
+  return(model)
+}
+```
+
+This can then be used iteratively to generate an MLR model trained on each data set
+
+```{r}
+for (i in 1:3){
+  ml.models$mouse[[i]] <- build_model(4311)
+  ml.models$human[[i]] <- build_model(4311)
+}
+for (i in 1:3){
+  ml.models$mouse[[i]] %>% fit(x.mouse[[i]]$train, y.mouse[[i]]$train)
+  ml.models$human[[i]] %>% fit(x.human[[i]]$train, y.human[[i]]$train)
+}
+```
+
+Then each model is tested on the testing data. Two lists are generated to store these tests, one saves the softmax output of the classifier and one saves the predicted class.
+
+```{r}
+ml.sftmx <- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
+ml.class <- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
+for (i in 1:3){
+  for (j in 1:3){
+    ml.sftmx$mouse[[i]][[j]] <- ml.models$mouse[[i]] %>% predict_proba(x.mouse[[j]]$test)
+    ml.sftmx$human[[i]][[j]] <- ml.models$human[[i]] %>% predict_proba(x.human[[j]]$test)
+    ml.sftmx$mouse_human[[i]][[j]] <- ml.models$mouse[[i]] %>% predict_proba(x.human[[j]]$test)
+    ml.sftmx$human_mouse[[i]][[j]] <- ml.models$human[[i]] %>% predict_proba(x.mouse[[j]]$test)
+    
+    ml.class$mouse[[i]][[j]] <- ml.models$mouse[[i]] %>% predict_classes(x.mouse[[j]]$test)
+    ml.class$human[[i]][[j]] <- ml.models$human[[i]] %>% predict_classes(x.human[[j]]$test)
+    ml.class$mouse_human[[i]][[j]] <- ml.models$mouse[[i]] %>% predict_classes(x.human[[j]]$test)
+    ml.class$human_mouse[[i]][[j]] <- ml.models$human[[i]] %>% predict_classes(x.mouse[[j]]$test)
+  }
+}
+```
+
+Then all data and all of the models are saved
+
+```{r}
+save(ml.sftmx, ml.class, file = "Data/MLResults.RData")
+save(x.mouse, y.mouse, x.human, y.human, train_ind, file = "Data/MLData.RData")
+for (i in 1:3){
+  save_model_tf(ml.models$mouse[[i]], file = paste0("Models/Mouse",i))
+  save_model_tf(ml.models$human[[i]], file = paste0("Models/Human",i))
+}
+```
+
+# SpecDists
+
+
