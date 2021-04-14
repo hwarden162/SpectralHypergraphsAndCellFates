@@ -26,6 +26,16 @@ load("Data/PrimalData.RData")
 load("Data/DualData.RData")
 ```
 
+Coding
+==========
+
+Row {data-height=800}
+----------
+
+```{r, dpi=240}
+knitr::include_url("codemarkdown.html", height = "800px")
+```
+
 Primal Spectral Distance
 ==========
 
