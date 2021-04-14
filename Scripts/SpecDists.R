@@ -1,17 +1,23 @@
-load("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Data/MLResults.RData")
-
+#Loading required libraries
 library(RSpectra)
 
+#Loading ML softmax outputs and classification estimates
+load("Data/MLResults.RData")
+
+#Function to find the hypergraph degree matrix from its incidence matrix
+#TODO add pseudoinverse option
 get_degree_matrix <- function(inc_mat) {
   return(diag(nrow(inc_mat))*apply(inc_mat^2, 1, sum))
 }
 
+#Function to find the hyperedge normalised laplacian matrix from a given incidence matrix
 get_hyperedge_normalised_laplacian <- function(inc_mat) {
   deg_mat <- get_degree_matrix(inc_mat)
   diag(deg_mat) <- diag(deg_mat)^-1
   return(t(inc_mat)%*%deg_mat%*%inc_mat)
 }
 
+#Function to find the non-zero eigenvalues of the normalised laplacian matrix from a given incidence matrix
 get_eigenvalues <- function(inc_mat) {
   inc_mat <- as.matrix(inc_mat)
   lap_mat <- get_hyperedge_normalised_laplacian(inc_mat)
@@ -20,6 +26,7 @@ get_eigenvalues <- function(inc_mat) {
   return(eigen$values)
 }
 
+#Function to find the spectral distance between two given spectra
 get_spectral_distance <- function(ev1, ev2) {
   ev1 <- sort(ev1, decreasing = TRUE)
   ev2 <- sort(ev2, decreasing = TRUE)
@@ -37,12 +44,17 @@ get_spectral_distance <- function(ev1, ev2) {
   return(ev)
 }
 
+#Function to find the spectral distance from the theoretical disconnected hypergraph
 get_spectral_distance_disconnected <- function(ev){
   return(get_spectral_distance(ev, rep(1, length(ev))))
 }
 
+#Creating hypergraph
+#All hypergraphs are stored in a list
+#If wanting to access the Primal M1H3 hypergraph, this would be found in hypergraphs$mouse_human$primal[[1]][[3]]
 hypergraphs <- list(mouse_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), mouse_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())))
 
+#Assigning all the hypergraph incidence matrices to the correct position
 for (i in 1:3){
   for (j in 1:3){
     hypergraphs$mouse_mouse$primal[[i]][[j]] <- ml.sftmx$mouse[[i]][[j]]
@@ -57,8 +69,11 @@ for (i in 1:3){
   }
 }
 
+#A list to store all of the eigenvalues of the hypergraphs
+#Has the same structure for storing eigenvalues as the hypergraphs list
 eigenvalues <- list(mouse_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), mouse_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())))
 
+#Assigining all eigenvalues to the correct position
 for (i in 1:3){
   for (j in 1:3){
     eigenvalues$mouse_mouse$primal[[i]][[j]] <- get_eigenvalues(hypergraphs$mouse_mouse$primal[[i]][[j]])
@@ -73,6 +88,11 @@ for (i in 1:3){
   }
 }
 
+#A list to store all spectral distances
+#Primal spectral distances are stored in the primal sublist and duals in the dual
+#disconnected stores the spectral distances from the disconnected hypergraph
+#If trying to find the primal distance between H1M3 and M2H2 it would be found in
+#spectral_distances$primal$hm$mh[[1]][[3]][[2]][[2]]
 spectral_distances <- list(primal = list(), dual = list(), disconnected = list())
 
 spectral_distances$primal$mm <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
@@ -91,6 +111,7 @@ spectral_distances$disconnected$mh <- list(list(), list(), list())
 spectral_distances$disconnected$hm <- list(list(), list(), list())
 spectral_distances$disconnected$hh <- list(list(), list(), list())
 
+#Generating and storing all primal and dual spectral distances
 for (i in 1:3){
   for (ii in 1:3){
     spectral_distances$primal$mm$mm[[i]][[ii]] <- list(list(),list(),list())
@@ -171,6 +192,7 @@ for (i in 1:3){
   }
 }
 
+#Generating and storing all spectral distances from the disconnected hypergraph
 for (i in 1:3){
   for (j in 1:3){
     spectral_distances$disconnected$mm[[i]][[j]] <- get_spectral_distance_disconnected(eigenvalues$mouse_mouse$dual[[i]][[j]])
