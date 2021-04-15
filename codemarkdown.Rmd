@@ -320,8 +320,173 @@ for (i in 1:3){
 }
 ```
 
+## Calculating Spectra
 
+Again a list is created to store the spectra of each of the hypergraphs
 
+```{r}
+eigenvalues <- list(mouse_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), mouse_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())))
+```
+
+The eigenvalues are then populated into the list using the functions defined above
+
+```{r}
+for (i in 1:3){
+  for (j in 1:3){
+    eigenvalues$mouse_mouse$primal[[i]][[j]] <- get_eigenvalues(hypergraphs$mouse_mouse$primal[[i]][[j]])
+    eigenvalues$mouse_human$primal[[i]][[j]] <- get_eigenvalues(hypergraphs$mouse_human$primal[[i]][[j]])
+    eigenvalues$human_mouse$primal[[i]][[j]] <- get_eigenvalues(hypergraphs$human_mouse$primal[[i]][[j]])
+    eigenvalues$human_human$primal[[i]][[j]] <- get_eigenvalues(hypergraphs$human_human$primal[[i]][[j]])
+    
+    eigenvalues$mouse_mouse$dual[[i]][[j]] <- get_eigenvalues(hypergraphs$mouse_mouse$dual[[i]][[j]])
+    eigenvalues$mouse_human$dual[[i]][[j]] <- get_eigenvalues(hypergraphs$mouse_human$dual[[i]][[j]])
+    eigenvalues$human_mouse$dual[[i]][[j]] <- get_eigenvalues(hypergraphs$human_mouse$dual[[i]][[j]])
+    eigenvalues$human_human$dual[[i]][[j]] <- get_eigenvalues(hypergraphs$human_human$dual[[i]][[j]])
+  }
+}
+```
+
+## Calculating Spectral Distances
+
+A list is created to store all of the spectral distances
+
+```{r}
+spectral_distances <- list(primal = list(), dual = list(), disconnected = list())
+```
+
+### Primal and Dual Distances
+
+The primal and dual spectral distances are then calculated and stored in the list
+
+```{r}
+spectral_distances$primal$mm <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$primal$mh <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$primal$hm <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$primal$hh <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+
+spectral_distances$dual$mm <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$dual$mh <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$dual$hm <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+spectral_distances$dual$hh <- list(mm = list(list(),list(),list()), mh = list(list(),list(),list()), hm = list(list(),list(),list()), hh = list(list(),list(),list()))
+
+spectral_distances$disconnected <- list(mm = list(), mh = list(), hm = list(), hh = list())
+spectral_distances$disconnected$mm <- list(list(), list(), list())
+spectral_distances$disconnected$mh <- list(list(), list(), list())
+spectral_distances$disconnected$hm <- list(list(), list(), list())
+spectral_distances$disconnected$hh <- list(list(), list(), list())
+
+#Generating and storing all primal and dual spectral distances
+for (i in 1:3){
+  for (ii in 1:3){
+    spectral_distances$primal$mm$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mm$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mm$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mm$hh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mm$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mm$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mm$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mm$hh[[i]][[ii]] <- list(list(),list(),list())
+    
+    spectral_distances$primal$mh$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mh$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mh$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$mh$hh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mh$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mh$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mh$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$mh$hh[[i]][[ii]] <- list(list(),list(),list())
+    
+    spectral_distances$primal$hm$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hm$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hm$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hm$hh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hm$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hm$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hm$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hm$hh[[i]][[ii]] <- list(list(),list(),list())
+    
+    spectral_distances$primal$hh$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hh$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hh$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$primal$hh$hh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hh$mm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hh$mh[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hh$hm[[i]][[ii]] <- list(list(),list(),list())
+    spectral_distances$dual$hh$hh[[i]][[ii]] <- list(list(),list(),list())
+    
+    for (iii in 1:3){
+      for (iv in 1:3){
+        spectral_distances$primal$mm$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$primal[[i]][[ii]],eigenvalues$mouse_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$mm$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$primal[[i]][[ii]],eigenvalues$mouse_human$primal[[iii]][[iv]])
+        spectral_distances$primal$mm$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$primal[[i]][[ii]],eigenvalues$human_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$mm$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$primal[[i]][[ii]],eigenvalues$human_human$primal[[iii]][[iv]])
+        spectral_distances$dual$mm$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$dual[[i]][[ii]],eigenvalues$mouse_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$mm$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$dual[[i]][[ii]],eigenvalues$mouse_human$dual[[iii]][[iv]])
+        spectral_distances$dual$mm$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$dual[[i]][[ii]],eigenvalues$human_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$mm$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_mouse$dual[[i]][[ii]],eigenvalues$human_human$dual[[iii]][[iv]])
+        
+        spectral_distances$primal$mh$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$primal[[i]][[ii]],eigenvalues$mouse_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$mh$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$primal[[i]][[ii]],eigenvalues$mouse_human$primal[[iii]][[iv]])
+        spectral_distances$primal$mh$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$primal[[i]][[ii]],eigenvalues$human_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$mh$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$primal[[i]][[ii]],eigenvalues$human_human$primal[[iii]][[iv]])
+        spectral_distances$dual$mh$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$dual[[i]][[ii]],eigenvalues$mouse_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$mh$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$dual[[i]][[ii]],eigenvalues$mouse_human$dual[[iii]][[iv]])
+        spectral_distances$dual$mh$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$dual[[i]][[ii]],eigenvalues$human_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$mh$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$mouse_human$dual[[i]][[ii]],eigenvalues$human_human$dual[[iii]][[iv]])
+        
+        spectral_distances$primal$hm$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$primal[[i]][[ii]],eigenvalues$mouse_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$hm$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$primal[[i]][[ii]],eigenvalues$mouse_human$primal[[iii]][[iv]])
+        spectral_distances$primal$hm$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$primal[[i]][[ii]],eigenvalues$human_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$hm$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$primal[[i]][[ii]],eigenvalues$human_human$primal[[iii]][[iv]])
+        spectral_distances$dual$hm$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$dual[[i]][[ii]],eigenvalues$mouse_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$hm$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$dual[[i]][[ii]],eigenvalues$mouse_human$dual[[iii]][[iv]])
+        spectral_distances$dual$hm$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$dual[[i]][[ii]],eigenvalues$human_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$hm$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_mouse$dual[[i]][[ii]],eigenvalues$human_human$dual[[iii]][[iv]])
+        
+        spectral_distances$primal$hh$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$primal[[i]][[ii]],eigenvalues$mouse_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$hh$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$primal[[i]][[ii]],eigenvalues$mouse_human$primal[[iii]][[iv]])
+        spectral_distances$primal$hh$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$primal[[i]][[ii]],eigenvalues$human_mouse$primal[[iii]][[iv]])
+        spectral_distances$primal$hh$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$primal[[i]][[ii]],eigenvalues$human_human$primal[[iii]][[iv]])
+        spectral_distances$dual$hh$mm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$dual[[i]][[ii]],eigenvalues$mouse_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$hh$mh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$dual[[i]][[ii]],eigenvalues$mouse_human$dual[[iii]][[iv]])
+        spectral_distances$dual$hh$hm[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$dual[[i]][[ii]],eigenvalues$human_mouse$dual[[iii]][[iv]])
+        spectral_distances$dual$hh$hh[[i]][[ii]][[iii]][[iv]] <- get_spectral_distance(eigenvalues$human_human$dual[[i]][[ii]],eigenvalues$human_human$dual[[iii]][[iv]])
+      }
+    }
+  }
+}
+```
+
+The spectral distance between the primal hypergraph trained on Mouse i and tested on Human j and the primal hypergraph trained on Human k and test on Human l can be found at
+
+```{r}
+spectral_distances$primal$mh$hh[[i]][[j]][[k]][[l]]
+```
+
+### Distances From the Disconnected Hypergraph
+
+The spectral distances from the disconnected hypergraph were calculated by 
+
+```{r}
+for (i in 1:3){
+  for (j in 1:3){
+    spectral_distances$disconnected$mm[[i]][[j]] <- get_spectral_distance_disconnected(eigenvalues$mouse_mouse$dual[[i]][[j]])
+    spectral_distances$disconnected$mh[[i]][[j]] <- get_spectral_distance_disconnected(eigenvalues$mouse_human$dual[[i]][[j]])
+    spectral_distances$disconnected$hm[[i]][[j]] <- get_spectral_distance_disconnected(eigenvalues$human_mouse$dual[[i]][[j]])
+    spectral_distances$disconnected$hh[[i]][[j]] <- get_spectral_distance_disconnected(eigenvalues$human_human$dual[[i]][[j]])
+  }
+}
+```
+
+To access the spectral distance from the disconnected hypergraph of the hypergraph trained on Human i and tested on Mouse j use the code
+
+```{r}
+spectral_distances$disconnected$hm[[i]][[j]]
+```
+
+# SDTables
+
+# BalAcc
 
 
 
