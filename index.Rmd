@@ -111,10 +111,10 @@ dual.data %>%
 Confidence/Accuracy
 ==========
 
-Row
+Row {data-height=500}
 ----------
 
-### **Balanced Accuracy Compared to Spectral Distance From the Disconnected Hypergraph**
+### **Balanced Accuracy Compared to Spectral Distance From the Disconnected Hypergraph** {data-width=900}
 ```{r}
 p.data <- data.frame(sd = unlist(spectral_distances$disconnected), acc = unlist(bal_accs))
 p.data$train <- c(rep(c("Mouse 1", "Mouse 2", "Mouse 3"), 2, each = 3),rep(c("Human 1", "Human 2", "Human 3"), 2, each = 3))
@@ -143,6 +143,10 @@ p.data %>%
   hc_yAxis(title = list(text = "Spectral Distance From the Disconnected Hypergraph")) %>%
   hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
 ```
+
+### Spectral Distance From the Disconnected Hypergraph as a Measure of Confidence
+
+The spectral distance from the disconnected hypergraph might be able to be used as a measure of confidence of a set of classifications. The disconnected hyeprgraph (the hypergraph where all hyperedges are a loop around one vertex) in the context of hypergraphs created using ML softmax output, would represent a classifier that was completely confident with every classification. Therefore, the greater the spectral distance between a given hypergraph and the disconnected hypergraph the less structural similarities there are between them and therefore the less likely it is to represent stronlgy confident classifications.
 
 Row
 ----------
@@ -509,6 +513,7 @@ conf_mat$hh[[3]][[3]]$byClass
 
 conf_mat$hh[[3]][[3]]$table
 ```
+
 
 
 
