@@ -14,6 +14,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
+This is a document explaining the computational methods used in "**insert paper title here**" by Raffaella Mulas, Hugh Warden, Michael Casey, Patrick Stumpf and Ben MacArthur.
+
+All scripts and data sets can be found at https://github.com/hwarden162/SpectralHypergraphsAndCellFates
+
 # Preprocessing
 
 # MLModels
@@ -34,8 +38,7 @@ Then the working directory is set, for this computer this is given by
 ```{r}
 setwd("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Demo")
 ```
-
-**This working directory is different from the one given in the scripts so that this document does not overwrite results currently being analysed in the project.** It is important that the working directory has two folders, "Data" containing all of the relevant data sets and exports and "Models" to save all the models into, as can be found in this GitHub repo.
+## Preparing the Data
 
 Then all of the preprocessed datasets from the previous step are loaded into the environment
 
@@ -114,6 +117,7 @@ The ground truth classes are then saved
 save(y.mouse.class, y.human.class, file = "Data/MLClasses.RData")
 ```
 
+## Creating the MLR Models
 
 A list is then made to store all of the machine learning models in
 
@@ -150,6 +154,8 @@ for (i in 1:3){
 }
 ```
 
+## Testing the MLR Models
+
 Then each model is tested on the testing data. Two lists are generated to store these tests, one saves the softmax output of the classifier and one saves the predicted class.
 
 ```{r}
@@ -182,5 +188,142 @@ for (i in 1:3){
 ```
 
 # SpecDists
+
+This script takes the softmax outputs from the MLModels script and uses them to create hypergraphs. Then it finds the eigenvalues of the hypergraph normalised laplacian matrices and computes the spectral distance between all of the hypergraphs. It also computes the spectral distance from the theoretical disconnected hypergraph.
+
+Firstly the required libraries are loaded
+
+```{r}
+library(RSpectra)
+```
+
+The RSpectra package is used as not all eigenvalues of the normalised laplacian matrix are calculated. For an mxn matrix only the first min(m,n) are needed as these are the only ones that can be non-zero and therefore effect the spectral distance.
+
+Then the softmax data is loaded
+
+```{r}
+load("Data/MLResults.RData")
+```
+
+## Functions to Calculate Hypergraph Spectra
+
+These functions are designed to calculate  the hyperedge normalised laplacian of a hypergraph given its incidence matrix, find its spectra and then compare these spectra.
+
+### Hypergraph Degree Matrix
+
+This is the function to find the hypergraph degree matrix
+
+```{r}
+get_degree_matrix <- function(inc_mat) {
+  return(diag(nrow(inc_mat))*apply(inc_mat^2, 1, sum))
+}
+```
+
+To do this it squares each element of the incidence matrix and then performs a row sum. Each of these elements is then put on the leading diagnal of an otherwise 0 matrix.
+
+### Hyperedge Normalised Laplacian Matrix
+
+This is the function to find the hyperedge normalised laplacian matrix of a hypergraph given its incidence matrix
+
+```{r}
+get_hyperedge_normalised_laplacian <- function(inc_mat) {
+  deg_mat <- get_degree_matrix(inc_mat)
+  diag(deg_mat) <- diag(deg_mat)^-1
+  return(t(inc_mat)%*%deg_mat%*%inc_mat)
+}
+```
+
+To do this it finds the degree matrix and then inverts it. This inversion should be turned into a pseudoinversion where zero entries remain as 0 so that isolated vertices don't create singular degree matrices. However, in this application it is not possible to have 0 entry as it is not in the image of the softmax function. In this case that means it is faster to use the true inverse as this can be vectorised easily.
+
+### Eigenvalues of the Laplacian
+
+This is the function to find the necessary eigenvalues of the laplacian matrix
+
+```{r}
+get_eigenvalues <- function(inc_mat) {
+  inc_mat <- as.matrix(inc_mat)
+  lap_mat <- get_hyperedge_normalised_laplacian(inc_mat)
+  num <- min(dim(inc_mat))
+  eigen <- eigs_sym(lap_mat, num)
+  return(eigen$values)
+}
+```
+
+The laplacian matrix for hypergraphs used has two forms, the vertex normalised laplacian and the hyperedge normalised laplacian. These both have the same multieigen set up to the multiplicity of the 0 eigenvalue, meaning that for an mxn incidence matrix they both have at most min(m,n) non-zero eigenvalues. As this analysis is using the spectral distance only non-zero eigenvalues matter with respect to analysis and therefore either normalised laplacian matrix can be calculated and then have the first min(m,n) eigenvalues taken.
+
+### Spectral Distance
+
+this is the function to calculate the spectral distance
+
+```{r}
+get_spectral_distance <- function(ev1, ev2) {
+  ev1 <- sort(ev1, decreasing = TRUE)
+  ev2 <- sort(ev2, decreasing = TRUE)
+  n_1 <- length(ev1)
+  n_2 <- length(ev2)
+  if (n_1 > n_2) {
+    diff <- n_1 - n_2
+    ev2 <- c(ev2, rep(0, diff))
+  }
+  if (n_2 > n_1) {
+    diff <- n_2 - n_1
+    ev1 <- c(ev1, rep(0, diff))
+  }
+  ev <- sum(abs(ev1 - ev2))
+  return(ev)
+}
+```
+
+The spectral distance is calculated by summing up the absolute difference between respective eigenvalues. First the eigenvalues are therefore sorted into size order. Then a check is made that there are the same number of eigenvalues in each set and if not the smaller one is augmented with 0s. Then the spectral distance is calculated by summing absolute differences.
+
+### Spectral Distance From Disconnected Hypergraph
+
+This is the code to find the spectral distance from the disconnected hypergraph
+
+```{r}
+get_spectral_distance_disconnected <- function(ev){
+  return(get_spectral_distance(ev, rep(1, length(ev))))
+}
+```
+
+This is essentially a wrapper for the spectral distance function above that compares the spectra to that of the disconnected hypergraph which only has the non-zero eigenvalue 1, with arbitrary multiplicity.
+
+## Creating Hypergraphs
+
+Firstly, a list is created to store the hypergraphs so that they can be iterated over
+
+```{r}
+hypergraphs <- list(mouse_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), mouse_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())))
+```
+
+To find the primal hyergraph (model 1) incidence matrix of the classifications made by training on Mouse i and testing on Human j would be found using 
+
+```{r}
+hypergraphs$mouse_human$primal[[i]][[j]]
+```
+
+These are then populated from the softmax outputs
+
+```{r}
+for (i in 1:3){
+  for (j in 1:3){
+    hypergraphs$mouse_mouse$primal[[i]][[j]] <- ml.sftmx$mouse[[i]][[j]]
+    hypergraphs$mouse_human$primal[[i]][[j]] <- ml.sftmx$mouse_human[[i]][[j]]
+    hypergraphs$human_mouse$primal[[i]][[j]] <- ml.sftmx$human_mouse[[i]][[j]]
+    hypergraphs$human_human$primal[[i]][[j]] <- ml.sftmx$human[[i]][[j]]
+    
+    hypergraphs$mouse_mouse$dual[[i]][[j]] <- t(ml.sftmx$mouse[[i]][[j]])
+    hypergraphs$mouse_human$dual[[i]][[j]] <- t(ml.sftmx$mouse_human[[i]][[j]])
+    hypergraphs$human_mouse$dual[[i]][[j]] <- t(ml.sftmx$human_mouse[[i]][[j]])
+    hypergraphs$human_human$dual[[i]][[j]] <- t(ml.sftmx$human[[i]][[j]])
+  }
+}
+```
+
+
+
+
+
+
 
 

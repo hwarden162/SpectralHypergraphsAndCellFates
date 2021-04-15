@@ -271,6 +271,8 @@ div.tocify {
 </div>
 
 
+<p>This is a document explaining the computational methods used in &quot;<strong>insert paper title here</strong>&quot; by Raffaella Mulas, Hugh Warden, Michael Casey, Patrick Stumpf and Ben MacArthur.</p>
+<p>All scripts and data sets can be found at <a href="https://github.com/hwarden162/SpectralHypergraphsAndCellFates" class="uri">https://github.com/hwarden162/SpectralHypergraphsAndCellFates</a></p>
 <div id="preprocessing" class="section level1">
 <h1><span class="header-section-number">1</span> Preprocessing</h1>
 </div>
@@ -283,7 +285,8 @@ library(splitstackshape)</code></pre>
 <p>The keras library is used for machine learning and the splitstackshape library is for stratified sampling. Both of these will be covered in more detail in the relevant sections below.</p>
 <p>Then the working directory is set, for this computer this is given by</p>
 <pre class="r"><code>setwd(&quot;/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode/Demo&quot;)</code></pre>
-<p><strong>This working directory is different from the one given in the scripts so that this document does not overwrite results currently being analysed in the project.</strong> It is important that the working directory has two folders, &quot;Data&quot; containing all of the relevant data sets and exports and &quot;Models&quot; to save all the models into, as can be found in this GitHub repo.</p>
+<div id="preparing-the-data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Preparing the Data</h2>
 <p>Then all of the preprocessed datasets from the previous step are loaded into the environment</p>
 <pre class="r"><code>load(&quot;Data/MouseFeatures&quot;)
 load(&quot;Data/HumanFeatures&quot;)
@@ -332,6 +335,9 @@ y.human$spec2 &lt;- list(train = y.human$spec2[train_ind$human[[2]],], test = y.
 y.human$spec3 &lt;- list(train = y.human$spec3[train_ind$human[[3]],], test = y.human$spec3[-train_ind$human[[3]],])</code></pre>
 <p>The ground truth classes are then saved</p>
 <pre class="r"><code>save(y.mouse.class, y.human.class, file = &quot;Data/MLClasses.RData&quot;)</code></pre>
+</div>
+<div id="creating-the-mlr-models" class="section level2">
+<h2><span class="header-section-number">2.2</span> Creating the MLR Models</h2>
 <p>A list is then made to store all of the machine learning models in</p>
 <pre class="r"><code>ml.models &lt;- list(mouse = list(), human = list())</code></pre>
 <p>The build_model function initialises and sets up a keras MLR model</p>
@@ -355,6 +361,9 @@ for (i in 1:3){
   ml.models$mouse[[i]] %&gt;% fit(x.mouse[[i]]$train, y.mouse[[i]]$train)
   ml.models$human[[i]] %&gt;% fit(x.human[[i]]$train, y.human[[i]]$train)
 }</code></pre>
+</div>
+<div id="testing-the-mlr-models" class="section level2">
+<h2><span class="header-section-number">2.3</span> Testing the MLR Models</h2>
 <p>Then each model is tested on the testing data. Two lists are generated to store these tests, one saves the softmax output of the classifier and one saves the predicted class.</p>
 <pre class="r"><code>ml.sftmx &lt;- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
 ml.class &lt;- list(mouse = list(list(), list(), list()), human = list(list(), list(), list()), mouse_human = list(list(), list(), list()), human_mouse = list(list(), list(), list()))
@@ -379,8 +388,99 @@ for (i in 1:3){
   save_model_tf(ml.models$human[[i]], file = paste0(&quot;Models/Human&quot;,i))
 }</code></pre>
 </div>
+</div>
 <div id="specdists" class="section level1">
 <h1><span class="header-section-number">3</span> SpecDists</h1>
+<p>This script takes the softmax outputs from the MLModels script and uses them to create hypergraphs. Then it finds the eigenvalues of the hypergraph normalised laplacian matrices and computes the spectral distance between all of the hypergraphs. It also computes the spectral distance from the theoretical disconnected hypergraph.</p>
+<p>Firstly the required libraries are loaded</p>
+<pre class="r"><code>library(RSpectra)</code></pre>
+<p>The RSpectra package is used as not all eigenvalues of the normalised laplacian matrix are calculated. For an mxn matrix only the first min(m,n) are needed as these are the only ones that can be non-zero and therefore effect the spectral distance.</p>
+<p>Then the softmax data is loaded</p>
+<pre class="r"><code>load(&quot;Data/MLResults.RData&quot;)</code></pre>
+<div id="functions-to-calculate-hypergraph-spectra" class="section level2">
+<h2><span class="header-section-number">3.1</span> Functions to Calculate Hypergraph Spectra</h2>
+<p>These functions are designed to calculate the hyperedge normalised laplacian of a hypergraph given its incidence matrix, find its spectra and then compare these spectra.</p>
+<div id="hypergraph-degree-matrix" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Hypergraph Degree Matrix</h3>
+<p>This is the function to find the hypergraph degree matrix</p>
+<pre class="r"><code>get_degree_matrix &lt;- function(inc_mat) {
+  return(diag(nrow(inc_mat))*apply(inc_mat^2, 1, sum))
+}</code></pre>
+<p>To do this it squares each element of the incidence matrix and then performs a row sum. Each of these elements is then put on the leading diagnal of an otherwise 0 matrix.</p>
+</div>
+<div id="hyperedge-normalised-laplacian-matrix" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Hyperedge Normalised Laplacian Matrix</h3>
+<p>This is the function to find the hyperedge normalised laplacian matrix of a hypergraph given its incidence matrix</p>
+<pre class="r"><code>get_hyperedge_normalised_laplacian &lt;- function(inc_mat) {
+  deg_mat &lt;- get_degree_matrix(inc_mat)
+  diag(deg_mat) &lt;- diag(deg_mat)^-1
+  return(t(inc_mat)%*%deg_mat%*%inc_mat)
+}</code></pre>
+<p>To do this it finds the degree matrix and then inverts it. This inversion should be turned into a pseudoinversion where zero entries remain as 0 so that isolated vertices don't create singular degree matrices. However, in this application it is not possible to have 0 entry as it is not in the image of the softmax function. In this case that means it is faster to use the true inverse as this can be vectorised easily.</p>
+</div>
+<div id="eigenvalues-of-the-laplacian" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Eigenvalues of the Laplacian</h3>
+<p>This is the function to find the necessary eigenvalues of the laplacian matrix</p>
+<pre class="r"><code>get_eigenvalues &lt;- function(inc_mat) {
+  inc_mat &lt;- as.matrix(inc_mat)
+  lap_mat &lt;- get_hyperedge_normalised_laplacian(inc_mat)
+  num &lt;- min(dim(inc_mat))
+  eigen &lt;- eigs_sym(lap_mat, num)
+  return(eigen$values)
+}</code></pre>
+<p>The laplacian matrix for hypergraphs used has two forms, the vertex normalised laplacian and the hyperedge normalised laplacian. These both have the same multieigen set up to the multiplicity of the 0 eigenvalue, meaning that for an mxn incidence matrix they both have at most min(m,n) non-zero eigenvalues. As this analysis is using the spectral distance only non-zero eigenvalues matter with respect to analysis and therefore either normalised laplacian matrix can be calculated and then have the first min(m,n) eigenvalues taken.</p>
+</div>
+<div id="spectral-distance" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> Spectral Distance</h3>
+<p>this is the function to calculate the spectral distance</p>
+<pre class="r"><code>get_spectral_distance &lt;- function(ev1, ev2) {
+  ev1 &lt;- sort(ev1, decreasing = TRUE)
+  ev2 &lt;- sort(ev2, decreasing = TRUE)
+  n_1 &lt;- length(ev1)
+  n_2 &lt;- length(ev2)
+  if (n_1 &gt; n_2) {
+    diff &lt;- n_1 - n_2
+    ev2 &lt;- c(ev2, rep(0, diff))
+  }
+  if (n_2 &gt; n_1) {
+    diff &lt;- n_2 - n_1
+    ev1 &lt;- c(ev1, rep(0, diff))
+  }
+  ev &lt;- sum(abs(ev1 - ev2))
+  return(ev)
+}</code></pre>
+<p>The spectral distance is calculated by summing up the absolute difference between respective eigenvalues. First the eigenvalues are therefore sorted into size order. Then a check is made that there are the same number of eigenvalues in each set and if not the smaller one is augmented with 0s. Then the spectral distance is calculated by summing absolute differences.</p>
+</div>
+<div id="spectral-distance-from-disconnected-hypergraph" class="section level3">
+<h3><span class="header-section-number">3.1.5</span> Spectral Distance From Disconnected Hypergraph</h3>
+<p>This is the code to find the spectral distance from the disconnected hypergraph</p>
+<pre class="r"><code>get_spectral_distance_disconnected &lt;- function(ev){
+  return(get_spectral_distance(ev, rep(1, length(ev))))
+}</code></pre>
+<p>This is essentially a wrapper for the spectral distance function above that compares the spectra to that of the disconnected hypergraph which only has the non-zero eigenvalue 1, with arbitrary multiplicity.</p>
+</div>
+</div>
+<div id="creating-hypergraphs" class="section level2">
+<h2><span class="header-section-number">3.2</span> Creating Hypergraphs</h2>
+<p>Firstly, a list is created to store the hypergraphs so that they can be iterated over</p>
+<pre class="r"><code>hypergraphs &lt;- list(mouse_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), mouse_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_mouse = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())), human_human = list(primal = list(list(), list(), list()), dual = list(list(), list(), list())))</code></pre>
+<p>To find the primal hyergraph (model 1) incidence matrix of the classifications made by training on Mouse i and testing on Human j would be found using</p>
+<pre class="r"><code>hypergraphs$mouse_human$primal[[i]][[j]]</code></pre>
+<p>These are then populated from the softmax outputs</p>
+<pre class="r"><code>for (i in 1:3){
+  for (j in 1:3){
+    hypergraphs$mouse_mouse$primal[[i]][[j]] &lt;- ml.sftmx$mouse[[i]][[j]]
+    hypergraphs$mouse_human$primal[[i]][[j]] &lt;- ml.sftmx$mouse_human[[i]][[j]]
+    hypergraphs$human_mouse$primal[[i]][[j]] &lt;- ml.sftmx$human_mouse[[i]][[j]]
+    hypergraphs$human_human$primal[[i]][[j]] &lt;- ml.sftmx$human[[i]][[j]]
+    
+    hypergraphs$mouse_mouse$dual[[i]][[j]] &lt;- t(ml.sftmx$mouse[[i]][[j]])
+    hypergraphs$mouse_human$dual[[i]][[j]] &lt;- t(ml.sftmx$mouse_human[[i]][[j]])
+    hypergraphs$human_mouse$dual[[i]][[j]] &lt;- t(ml.sftmx$human_mouse[[i]][[j]])
+    hypergraphs$human_human$dual[[i]][[j]] &lt;- t(ml.sftmx$human[[i]][[j]])
+  }
+}</code></pre>
+</div>
 </div>
 
 
