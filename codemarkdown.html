@@ -627,6 +627,35 @@ for (i in 1:3){
 </div>
 <div id="balacc" class="section level1">
 <h1><span class="header-section-number">5</span> BalAcc</h1>
+<p>First the libraries needed are loaded</p>
+<pre class="r"><code>library(yardstick)
+library(caret)</code></pre>
+<p>The yardstick library is used to calculate the balanced accuracy of classifications and the caret package is used to calculate the confusion matrix and various descriptive statistics of the classifications.</p>
+<p>Than the data is loaded</p>
+<pre class="r"><code>load(&quot;Data/MLResults.RData&quot;)
+load(&quot;Data/MLClasses.RData&quot;)</code></pre>
+<p>Then lists are created to store the balanced accuracies and confidence matrices</p>
+<pre class="r"><code>bal_accs &lt;- list(mm = list(list(), list(), list()), mh = list(list(), list(), list()), hm = list(list(), list(), list()), hh = list(list(), list(), list()))
+
+conf_mat &lt;- list(mm = list(list(), list(), list()), mh = list(list(), list(), list()), hm = list(list(), list(), list()), hh = list(list(), list(), list()))</code></pre>
+<p>Then the confidence matrix and descriptive statistics are calculated for each set of classifications</p>
+<pre class="r"><code>for (i in 1:3){
+  for (j in 1:3){
+    conf_mat$mm[[i]][[j]] &lt;- confusionMatrix(as.factor(levels(y.mouse.class$full)[ml.class$mouse[[i]][[j]]+1]), y.mouse.class[[j]]$test)
+    conf_mat$mh[[i]][[j]] &lt;- confusionMatrix(as.factor(levels(y.mouse.class$full)[ml.class$mouse_human[[i]][[j]]+1]), y.human.class[[j]]$test)
+    conf_mat$hm[[i]][[j]] &lt;- confusionMatrix(as.factor(levels(y.human.class$full)[ml.class$human_mouse[[i]][[j]]+1]), y.mouse.class[[j]]$test)
+    conf_mat$hh[[i]][[j]] &lt;- confusionMatrix(as.factor(levels(y.human.class$full)[ml.class$human[[i]][[j]]+1]), y.human.class[[j]]$test)
+  }
+}</code></pre>
+<p>Then the balanced accuracy is calculated for each set of classifications</p>
+<pre class="r"><code>for (i in 1:3){
+  for (j in 1:3){
+    bal_accs$mm[[i]][[j]] &lt;- bal_accuracy(conf_mat$mm[[i]][[j]]$table)$.estimate
+    bal_accs$mh[[i]][[j]] &lt;- bal_accuracy(conf_mat$mh[[i]][[j]]$table)$.estimate
+    bal_accs$hm[[i]][[j]] &lt;- bal_accuracy(conf_mat$hm[[i]][[j]]$table)$.estimate
+    bal_accs$hh[[i]][[j]] &lt;- bal_accuracy(conf_mat$hh[[i]][[j]]$table)$.estimate
+  }
+}</code></pre>
 </div>
 
 
