@@ -622,11 +622,9 @@ for (i in 1:3){
 </div>
 </div>
 </div>
-<div id="sdtables" class="section level1">
-<h1><span class="header-section-number">4</span> SDTables</h1>
-</div>
 <div id="balacc" class="section level1">
-<h1><span class="header-section-number">5</span> BalAcc</h1>
+<h1><span class="header-section-number">4</span> BalAcc</h1>
+<p>This script is used to calculate the confusion matrices and descriptive statistics (specifically balanced accuracies) of all of the classifiers.</p>
 <p>First the libraries needed are loaded</p>
 <pre class="r"><code>library(yardstick)
 library(caret)</code></pre>
@@ -656,6 +654,66 @@ conf_mat &lt;- list(mm = list(list(), list(), list()), mh = list(list(), list(),
     bal_accs$hh[[i]][[j]] &lt;- bal_accuracy(conf_mat$hh[[i]][[j]]$table)$.estimate
   }
 }</code></pre>
+</div>
+<div id="sdtables" class="section level1">
+<h1><span class="header-section-number">5</span> SDTables</h1>
+<p>This script is used to generate a matrix of spectral distances to compare as a heatmap.</p>
+<p>Firstly two matrices are created to store the primal and spectral distances.</p>
+<pre class="r"><code>sd.p &lt;- matrix(0, 36,36)
+sd.d &lt;- matrix(0, 36,36)</code></pre>
+<p>Then the matrix is populated with the spectral distances</p>
+<pre class="r"><code>sd.p[1:9,1:9] &lt;- matrix(unlist(spectral_distances$primal$mm$mm), 9, 9, byrow = TRUE)
+sd.d[1:9,1:9] &lt;- matrix(unlist(spectral_distances$dual$mm$mm), 9, 9, byrow = TRUE)
+
+sd.p[1:9,10:18] &lt;- matrix(unlist(spectral_distances$primal$mm$mh), 9, 9, byrow = TRUE)
+sd.d[1:9,10:18] &lt;- matrix(unlist(spectral_distances$dual$mm$mh), 9, 9, byrow = TRUE)
+sd.p[10:18,1:9] &lt;- matrix(unlist(spectral_distances$primal$mm$mh), 9, 9, byrow = FALSE)
+sd.d[10:18,1:9] &lt;- matrix(unlist(spectral_distances$dual$mm$mh), 9, 9, byrow = FALSE)
+
+sd.p[1:9,19:27] &lt;- matrix(unlist(spectral_distances$primal$mm$hm), 9, 9, byrow = TRUE)
+sd.d[1:9,19:27] &lt;- matrix(unlist(spectral_distances$dual$mm$hm), 9, 9, byrow = TRUE)
+sd.p[19:27,1:9] &lt;- matrix(unlist(spectral_distances$primal$mm$hm), 9, 9, byrow = FALSE)
+sd.d[19:27,1:9] &lt;- matrix(unlist(spectral_distances$dual$mm$hm), 9, 9, byrow = FALSE)
+
+sd.p[1:9,28:36] &lt;- matrix(unlist(spectral_distances$primal$mm$hh), 9, 9, byrow = TRUE)
+sd.d[1:9,28:36] &lt;- matrix(unlist(spectral_distances$dual$mm$hh), 9, 9, byrow = TRUE)
+sd.p[28:36,1:9] &lt;- matrix(unlist(spectral_distances$primal$mm$hh), 9, 9, byrow = FALSE)
+sd.d[28:36,1:9] &lt;- matrix(unlist(spectral_distances$dual$mm$hh), 9, 9, byrow = FALSE)
+
+sd.p[10:18,10:18] &lt;- matrix(unlist(spectral_distances$primal$mh$mh), 9, 9, byrow = TRUE)
+sd.d[10:18,10:18] &lt;- matrix(unlist(spectral_distances$dual$mh$mh), 9, 9, byrow = TRUE)
+
+sd.p[10:18,19:27] &lt;- matrix(unlist(spectral_distances$primal$mh$hm), 9, 9, byrow = TRUE)
+sd.d[10:18,19:27] &lt;- matrix(unlist(spectral_distances$dual$mh$hm), 9, 9, byrow = TRUE)
+sd.p[19:27,10:18] &lt;- matrix(unlist(spectral_distances$primal$mh$hm), 9, 9, byrow = FALSE)
+sd.d[19:27,10:18] &lt;- matrix(unlist(spectral_distances$dual$mh$hm), 9, 9, byrow = FALSE)
+
+sd.p[10:18,28:36] &lt;- matrix(unlist(spectral_distances$primal$mh$hh), 9, 9, byrow = TRUE)
+sd.d[10:18,28:36] &lt;- matrix(unlist(spectral_distances$dual$mh$hh), 9, 9, byrow = TRUE)
+sd.p[28:36,10:18] &lt;- matrix(unlist(spectral_distances$primal$mh$hh), 9, 9, byrow = FALSE)
+sd.d[28:36, 10:18] &lt;- matrix(unlist(spectral_distances$dual$mh$hh), 9, 9, byrow = FALSE)
+
+sd.p[19:27,19:27] &lt;- matrix(unlist(spectral_distances$primal$hm$hm), 9, 9, byrow = TRUE)
+sd.d[19:27,19:27] &lt;- matrix(unlist(spectral_distances$dual$hm$hm), 9, 9, byrow = TRUE)
+
+sd.p[19:27,28:36] &lt;- matrix(unlist(spectral_distances$primal$hm$hh), 9, 9, byrow = TRUE)
+sd.d[19:27,28:36] &lt;- matrix(unlist(spectral_distances$dual$hm$hh), 9, 9, byrow = TRUE)
+sd.p[28:36,19:27] &lt;- matrix(unlist(spectral_distances$primal$hm$hh), 9, 9, byrow = FALSE)
+sd.d[28:36,19:27] &lt;- matrix(unlist(spectral_distances$dual$hm$hh), 9, 9, byrow = FALSE)
+
+sd.p[28:36,28:36] &lt;- matrix(unlist(spectral_distances$primal$hh$hh), 9, 9, byrow = TRUE)
+sd.d[28:36,28:36] &lt;- matrix(unlist(spectral_distances$dual$hh$hh), 9, 9, byrow = TRUE)</code></pre>
+<p>Then the row and column names are updated to represent the corresponding hypergraphs</p>
+<pre class="r"><code>train_num &lt;- rep(1:3, 4, each = 3)
+test_num &lt;- rep(1:3, 12)
+train_spec &lt;- rep(c(&quot;M&quot;, &quot;H&quot;), 1, each = 18)
+test_spec &lt;- rep(c(&quot;M&quot;, &quot;H&quot;), 2, each = 9)
+id &lt;- paste0(train_spec, train_num, &quot;/&quot;, test_spec, test_num)
+
+rownames(sd.p) &lt;- id
+rownames(sd.d) &lt;- id
+colnames(sd.p) &lt;- id
+colnames(sd.d) &lt;- id</code></pre>
 </div>
 
 
