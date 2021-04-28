@@ -609,6 +609,12 @@ colnames(sd.p) <- id
 colnames(sd.d) <- id
 ```
 
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```
+
 
 
 
