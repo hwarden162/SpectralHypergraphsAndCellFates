@@ -12,6 +12,7 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(highcharter)
+library(tidyverse)
 library(reshape2)
 library(dplyr)
 library(broom)
@@ -25,6 +26,7 @@ load("Data/Accs.RData")
 load("Data/SpecDists.RData")
 load("Data/PrimalData.RData")
 load("Data/DualData.RData")
+load("Data/PlotData.RData")
 ```
 
 Coding
@@ -35,6 +37,102 @@ Row {data-height=800}
 
 ```{r, dpi=240}
 knitr::include_url("codemarkdown.html", height = "800px")
+```
+
+Cell Fate
+==========
+
+Row {.tabset .tabset-fade data-height=800}
+----------
+
+### All
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Type)) + geom_point()
+```
+
+### Basophils
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Basophils)) + geom_point() + theme(legend.position = "none")
+```
+
+### Endothelial Cells
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = `Endothelial Cells`)) + geom_point() + theme(legend.position = "none")
+```
+
+### Erythroblasts
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Erythroblasts)) + geom_point() + theme(legend.position = "none")
+```
+
+### HSPCs
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = HSPCs)) + geom_point() + theme(legend.position = "none")
+```
+
+### Megakaryocytes
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Megakaryocytes)) + geom_point() + theme(legend.position = "none")
+```
+
+### Monoblasts
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Monoblasts)) + geom_point() + theme(legend.position = "none")
+```
+
+### Monocytes
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Monocytes)) + geom_point() + theme(legend.position = "none")
+```
+
+### Myeloblasts
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Myeloblasts)) + geom_point() + theme(legend.position = "none")
+```
+
+### Myelocytes
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Myelocytes)) + geom_point() + theme(legend.position = "none")
+```
+
+### Neutrophils
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Neutrophils)) + geom_point() + theme(legend.position = "none")
+```
+
+### Pericytes
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = Pericytes)) + geom_point() + theme(legend.position = "none")
+```
+
+### Pre-B
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = PreB)) + geom_point() + theme(legend.position = "none")
+```
+
+### Pro-B
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = ProB)) + geom_point() + theme(legend.position = "none")
+```
+
+### T-NK
+
+```{r}
+ggplot(sftmx, aes(tSNE1, tSNE2, colour = TNK)) + geom_point() + theme(legend.position = "none")
 ```
 
 Primal Spectral Distance
