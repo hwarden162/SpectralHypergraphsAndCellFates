@@ -615,12 +615,492 @@ conf_mat$hh[[3]][[3]]$table
 ```
 
 
+Eigenvalues
+==========
 
+Row
+----------
 
+### Mouse 1 Trained Eigenvalues - Primal
 
+```{r}
+ind.train <- 1
+temp <- c(eigenvalues$mouse_mouse$primal[[ind.train]], eigenvalues$mouse_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
 
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
 
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
 
+### Mouse 1 Trained Eigenvalues - Dual
 
+```{r}
+ind.train <- 1
+temp <- c(eigenvalues$mouse_mouse$dual[[ind.train]], eigenvalues$mouse_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
 
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### Mouse 2 Trained Eigenvalues - Primal
+
+```{r}
+ind.train <- 2
+temp <- c(eigenvalues$mouse_mouse$primal[[ind.train]], eigenvalues$mouse_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+### Mouse 2 Trained Eigenvalues - Dual
+
+```{r}
+ind.train <- 2
+temp <- c(eigenvalues$mouse_mouse$dual[[ind.train]], eigenvalues$mouse_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### Mouse 3 Trained Eigenvalues - Primal
+
+```{r}
+ind.train <- 3
+temp <- c(eigenvalues$mouse_mouse$primal[[ind.train]], eigenvalues$mouse_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+### Mouse 3 Trained Eigenvalues - Dual
+
+```{r}
+ind.train <- 3
+temp <- c(eigenvalues$mouse_mouse$dual[[ind.train]], eigenvalues$mouse_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Mouse", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### Human 1 Trained Eigenvalues - Primal
+
+```{r}
+ind.train <- 1
+temp <- c(eigenvalues$human_mouse$primal[[ind.train]], eigenvalues$human_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+### Human 1 Trained Eigenvalues - Dual
+
+```{r}
+ind.train <- 1
+temp <- c(eigenvalues$human_mouse$dual[[ind.train]], eigenvalues$human_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### Human 2 Trained Eigenvalues - Primal
+
+```{r}
+ind.train <- 2
+temp <- c(eigenvalues$human_mouse$primal[[ind.train]], eigenvalues$human_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+### Human 2 Trained Eigenvalues - Dual
+
+```{r}
+ind.train <- 2
+temp <- c(eigenvalues$human_mouse$dual[[ind.train]], eigenvalues$human_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+Row
+----------
+
+### Human 3 Trained Eigenvalues - Primal
+
+```{r}
+ind.train <- 3
+temp <- c(eigenvalues$human_mouse$primal[[ind.train]], eigenvalues$human_human$primal[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
+
+### Human 3 Trained Eigenvalues - Dual
+
+```{r}
+ind.train <- 3
+temp <- c(eigenvalues$human_mouse$dual[[ind.train]], eigenvalues$human_human$dual[[ind.train]])
+temp <- unlist(temp)
+p.temp <- data.frame(Value = temp, Tested = rep(1:3, each = 11), Tested = ind.train)
+p.temp$Trained <- paste("Human", p.temp$Trained)
+p.temp$Tested <- c(paste("Mouse", p.temp$Tested[1:33]), paste("Human", p.temp$Tested[34:66]))
+p.temp$Eigenvalue <- 1:11
+
+x <- c("Tested On:", "Eigenvalue:", "Value:")
+y <- sprintf("{point.%s:.2f}", c("Tested", "Eigenvalue", "Value"))
+tltip <- tooltip_table(x,y)
+
+p.temp %>%
+  hchart("column", hcaes(x = Eigenvalue, y = Value, group = Tested)) %>%
+  hc_colors(c("#5DADE2", "#2E86C1", "#21618C", "#48C9B0", "#17A589", "#117864")) %>%
+  hc_chart(options3d = list(enabled = TRUE
+                                   , beta = 20
+                                   , alpha = 30
+                                   , depth = 400
+                                   , viewDistance = 5)) %>%
+  hc_plotOptions(
+            series = list(groupZpadding = 0
+                           , depth = 100
+                           , groupPadding = 0
+                           , grouping = FALSE
+                           , frame = list(
+                                     bottom = list(
+                                                size = 1
+                                                , color = 'rgba(0,0,0,0.05)'
+                                              )
+                                          )
+                          )
+                       ) %>%
+  hc_tooltip(useHTML = TRUE, headerFormat = "", pointFormat = tltip)
+```
 
