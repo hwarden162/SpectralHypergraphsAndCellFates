@@ -1,12 +1,11 @@
-#First run preprocessing data *coming soon*
-#TODO write preprocessing data script
+#First run preprocessing data
 
 #Required Packages
 library(keras)
 library(splitstackshape)
 
 #Setting working directory
-setwd("/Users/hugh/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode")
+setwd("/Users/hwarden/Documents/University/Maths/Year4/Project/RCode/MachineLearningCode")
 
 #Loading required data
 #TODO convert data to RData files
